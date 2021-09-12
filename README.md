@@ -29,7 +29,8 @@ curl -X DELETE localhost:8080/employees/3
 ```
 
 ### Before of converter the application in REST API
-```curl -v localhost:8080/employees/1 | python -m json.tool
+```
+curl -v localhost:8080/employees/1 | python -m json.tool
 ```
 
 #### Output
