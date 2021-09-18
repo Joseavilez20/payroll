@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -32,31 +34,31 @@ public class EmployeeController {
     
     private final EmployeeRepository repository;
 
-    EmployeeController(EmployeeRepository repository) {
+    private final EmployeeModelAssembler assembler;
+
+    EmployeeController(EmployeeRepository repository, EmployeeModelAssembler assembler) {
         this.repository = repository;
+        this.assembler = assembler;
     }
 
 
-    // 
     // @GetMapping("/employees")
-	// ResponseEntity<CollectionModel<EntityModel<Employee>>> findAll() {
+    // CollectionModel<EntityModel<Employee>> all() {
+    //     List<EntityModel<Employee>> employees = StreamSupport.stream(repository.findAll().spliterator(), false)
+    //     .map(employee -> EntityModel.of(employee,
+    //     linkTo(methodOn(EmployeeController.class).findOne(employee.getId())).withSelfRel(),
+    //     linkTo(methodOn(EmployeeController.class).all()).withRel("employees")))
+    //     .collect(Collectors.toList());
 
-	// 	List<EntityModel<Employee>> employees = StreamSupport.stream(repository.findAll().spliterator(), false)
-	// 			.map(employee -> EntityModel.of(employee, //
-	// 					linkTo(methodOn(EmployeeController.class).findOne(employee.getId())).withSelfRel(), //
-	// 					linkTo(methodOn(EmployeeController.class).findAll()).withRel("employees"))) //
-	// 			.collect(Collectors.toList());
-
-	// 	return ResponseEntity.ok( //
-	// 			CollectionModel.of(employees, //
-	// 					linkTo(methodOn(EmployeeController.class).findAll()).withSelfRel()));
-	// }
+    //     return CollectionModel.of(employees,
+    //     linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
+    // }
+    
     @GetMapping("/employees")
-    CollectionModel<EntityModel<Employee>> all() {
-        List<EntityModel<Employee>> employees = StreamSupport.stream(repository.findAll().spliterator(), false)
-        .map(employee -> EntityModel.of(employee,
-        linkTo(methodOn(EmployeeController.class).findOne(employee.getId())).withSelfRel(),
-        linkTo(methodOn(EmployeeController.class).all()).withRel("employees")))
+    CollectionModel<EntityModel<Employee>> all(){
+        
+        List<EntityModel<Employee>> employees = repository.findAll().stream()
+        .map(assembler::toModel)
         .collect(Collectors.toList());
 
         return CollectionModel.of(employees,
@@ -69,27 +71,16 @@ public class EmployeeController {
     // }
 
 
-    // @GetMapping("/employees/{id}")
-    // EntityModel<Employee> one(@PathVariable Long id) {
-       
-    //     Employee employee = repository.findById(id)
-    //         .orElseThrow(() -> new EmployeeNotFoundException(id));
-        
-    //     return EntityModel.of(employee, 
-    //         linkTo(methodOn(EmployeeController.class).findOne(id)).withSelfRel(),
-    //         linkTo(methodOn(EmployeeController.class).findAll()).withRel("employees"));
-        
-    // }
-    @GetMapping("/employees/{id}")
-    ResponseEntity<EntityModel<Employee>> findOne(@PathVariable long id) {
+  
+   @GetMapping("/employees/{id}")
+   EntityModel<Employee> one(@PathVariable Long id){
 
-		return repository.findById(id) //
-				.map(employee -> EntityModel.of(employee, //
-						linkTo(methodOn(EmployeeController.class).findOne(employee.getId())).withSelfRel())) //
-						// linkTo(methodOn(EmployeeController.class).fin()).withRel("employees"))) //
-				.map(ResponseEntity::ok) //
-				.orElse(ResponseEntity.notFound().build());
-	}
+    Employee employee = repository.findById(id)
+    .orElseThrow(() -> new EmployeeNotFoundException(id));
+
+    return assembler.toModel(employee);
+   }
+   
 
 
     // @PutMapping("/employees/{id}")
