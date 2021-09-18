@@ -65,10 +65,15 @@ public class EmployeeController {
         linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
     }
 
-    // @PostMapping("/employees")
-    // Employee newEmployee(@RequestBody Employee newEmployee) {
-    //     return repository.save(newEmployee);
-    // }
+    @PostMapping("/employees")
+    ResponseEntity<?> newEmployee(@RequestBody Employee newEmployee) {
+        EntityModel<Employee> entityModel = assembler.toModel(repository.save(newEmployee));
+
+        return ResponseEntity
+            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+            .body(entityModel);
+    }
+    
 
 
   
