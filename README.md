@@ -2,27 +2,123 @@
 
 ## Testing Request 🚀
 ### On Windows
-### Creating a new employee
+
+### Showing employees
+```
+curl -v localhost:8080/employees/ | python -m json.tool
+```
+#### Output
+```
+> GET /employees/ HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/7.78.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200
+< Content-Type: application/hal+json
+< Transfer-Encoding: chunked
+< Date: Sun, 19 Sep 2021 20:15:05 GMT
+<
+{ [512 bytes data]
+100   505    0   505    0     0   4404      0 --:--:-- --:--:-- --:--:--  4633
+* Connection #0 to host localhost left intact
+{
+    "_embedded": {
+        "employeeList": [
+            {
+                "id": 1,
+                "firstName": "Juan",
+                "lastName": "Sierra",
+                "role": "burglar",
+                "name": "Juan Sierra",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/employees/1"
+                    },
+                    "employees": {
+                        "href": "http://localhost:8080/employees"
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "firstName": "Camila",
+                "lastName": "Narvaez",
+                "role": "thief",
+                "name": "Camila Narvaez",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/employees/2"
+                    },
+                    "employees": {
+                        "href": "http://localhost:8080/employees"
+                    }
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {
+            "href": "http://localhost:8080/employees"
+        }
+    }
+}
+```
+
+### Creating a new employee (console Git bash)
 
 ```
-curl -H "Content-Type: application/json" -X POST -d {\"name\":\"mkyong\",
-\"role\":\"gardener\"} http://localhost:8080/employees
+curl -H "Content-Type: application/json" -X POST -d '{"firstName":"Samwise", "lastName":"Gamgee","role":"gardener"}' http://localhost:8080/employees | python -m json.tool
+
 ```
 
 #### Output 
 ```
-{"id":3,"name":"mkyong","role":"gardener"}
+{
+    "id": 6,
+    "firstName": "Samwise",
+    "lastName": "Gamgee",
+    "role": "gardener",
+    "name": "Samwise Gamgee",
+    "_links": {
+        "self": {
+            "href": "http://localhost:8080/employees/6"
+        },
+        "employees": {
+            "href": "http://localhost:8080/employees"
+        }
+    }
+}
+
 ```
 
 ### Update the user
 ```
-curl -H "Content-Type: application/json" -X PUT -d {\"name\":\"mkyong\",\"role\":\"ringbearer\"} http://localhost:8080/employees/3
+ curl -X PUT localhost:8080/employees/6 -H 'Content-type:application/json' -d '{"firstName": "Samw", "lastName": "Gamgee", "role": "ring bearer"}' | python -m json.tool
+
 ```
 
 #### Output
 
 ```
-{"id":3,"name":"mkyong","role":"ringbearer"}
+{
+    "id": 6,
+    "firstName": "Samw",
+    "lastName": "Gamgee",
+    "role": "ring bearer",
+    "name": "Samw Gamgee",
+    "_links": {
+        "self": {
+            "href": "http://localhost:8080/employees/6"
+        },
+        "employees": {
+            "href": "http://localhost:8080/employees"
+        }
+    }
+}
+
+
 ```
 
 ### Delete User 
